@@ -62,7 +62,10 @@ class ServiceDetailViewModel(
 
         viewModelScope.launch {
             isLoading = true
-            val result = repository.addServiceToEvent(ServiceEventInfo(eventId, serviceId), token)
+            val result = repository.addServiceToEvent(ServiceEventInfo(
+                eventId = eventId,
+                serviceId = serviceId,
+            ), token)
             isLoading = false
         }
     }

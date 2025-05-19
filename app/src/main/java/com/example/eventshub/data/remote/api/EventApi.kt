@@ -2,6 +2,7 @@ package com.example.eventshub.data.remote.api
 
 import com.example.eventshub.data.model.Event
 import com.example.eventshub.data.model.Service
+import com.example.eventshub.data.model.ServiceEvent
 import com.example.eventshub.domain.model.ServiceEventInfo
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -39,7 +40,7 @@ interface EventApi {
     suspend fun getServicesOfEvent(
         @Header("Authorization") token: String,
         @Path("id") eventId: Long
-    ): List<Service>
+    ): List<ServiceEvent>
 
     @DELETE("/event/{id}")
     suspend fun deleteEvent(

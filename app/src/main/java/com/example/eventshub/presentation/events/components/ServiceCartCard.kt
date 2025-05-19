@@ -34,13 +34,14 @@ import com.example.eventshub.R
 import com.example.eventshub.data.model.BookingStatus
 import com.example.eventshub.data.model.Service
 import com.example.eventshub.data.model.ServiceBookingInfo
+import com.example.eventshub.data.model.ServiceEvent
 import com.example.eventshub.presentation.booking.BookingViewModel
 import com.example.eventshub.presentation.events.eventdetails.EventDetailViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ServiceCartCard(
-    service: Service,
+    service: ServiceEvent,
     eventId: Long,
     eventOrganizerId:Long,
     onConfirm: ()->Unit,
@@ -87,7 +88,7 @@ fun ServiceCartCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = service.serviceType,
+                        text = service.serviceType.toString(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                     )
@@ -127,7 +128,6 @@ fun ServiceCartCard(
                         )
                         Toast.makeText(context, "Service confirmed", Toast.LENGTH_SHORT).show()
                         bookingViewModel.confirmServiceBooking(bookingInfo)
-                        bookingViewModel.loadRegisteredServices(eventId)
                         onConfirm()
                     },
                     shape = RoundedCornerShape(8.dp),
@@ -144,7 +144,8 @@ fun ServiceCartCard(
                     onClick = {
                         eventDetailsViewModel.removeServiceFromEvent(
                             eventId = eventId,
-                            serviceId = service.id
+                            serviceId = service.id,
+                            id = service.serviceEventId
                         )
                         Toast.makeText(context, "Service Deleted", Toast.LENGTH_SHORT).show()
                     },

@@ -3,6 +3,7 @@ package com.example.eventshub.data.remote.repository
 import android.util.Log
 import com.example.eventshub.data.model.Event
 import com.example.eventshub.data.model.Service
+import com.example.eventshub.data.model.ServiceEvent
 import com.example.eventshub.data.remote.api.EventApi
 import com.example.eventshub.domain.model.ServiceEventInfo
 import com.example.eventshub.domain.repository.EventRepository
@@ -68,7 +69,7 @@ class EventRepositoryImpl(private val api: EventApi) : EventRepository {
         }
     }
 
-    override suspend fun getServicesOfEvent(eventId: Long, token: String): Resource<List<Service>> {
+    override suspend fun getServicesOfEvent(eventId: Long, token: String): Resource<List<ServiceEvent>> {
         return try {
             val result = api.getServicesOfEvent("Bearer $token", eventId)
             Resource.Success(result)

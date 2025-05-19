@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventshub.data.model.Event
 import com.example.eventshub.data.model.Service
+import com.example.eventshub.data.model.ServiceEvent
 import com.example.eventshub.domain.model.ServiceEventInfo
 import com.example.eventshub.domain.repository.EventRepository
 import com.example.eventshub.util.Resource
@@ -20,7 +21,7 @@ class EventDetailViewModel(
 
     var isLoading by mutableStateOf(false)
     var snackbarMessage by mutableStateOf<String?>(null)
-    var services = mutableStateOf<List<Service>>(emptyList())
+    var services = mutableStateOf<List<ServiceEvent>>(emptyList())
 
     fun updateEvent(event: Event) {
         val token = preferences.getString("token", "") ?: ""
@@ -60,14 +61,14 @@ class EventDetailViewModel(
         }
     }
 
-    fun removeServiceFromEvent(eventId: Long, serviceId: Long) {
+    fun removeServiceFromEvent(eventId: Long, serviceId: Long, id: Long) {
         val token = preferences.getString("token", "") ?: ""
         if (token.isBlank()) return
 
         viewModelScope.launch {
             isLoading = true
             val result = repository.removeServiceFromEvent(
-                ServiceEventInfo(eventId = eventId, serviceId = serviceId),
+                ServiceEventInfo(id = id, eventId = eventId, serviceId = serviceId),
                 token
             )
             snackbarMessage = result.message

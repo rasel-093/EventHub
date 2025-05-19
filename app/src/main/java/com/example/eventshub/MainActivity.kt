@@ -32,7 +32,9 @@ import com.example.eventshub.presentation.auth.signup.SignUpScreen
 import com.example.eventshub.presentation.booking.BookingScreen
 import com.example.eventshub.presentation.events.EventsScreen
 import com.example.eventshub.presentation.events.EventsViewModel
+import com.example.eventshub.presentation.events.eventdetails.ApprovedServicesScreen
 import com.example.eventshub.presentation.events.eventdetails.EventDetailScreen
+import com.example.eventshub.presentation.events.eventdetails.PendingServicesScreen
 import com.example.eventshub.presentation.home.HomeScreen
 import com.example.eventshub.presentation.home.detail.ServiceDetailScreen
 import com.example.eventshub.presentation.messages.ChatScreen
@@ -217,6 +219,24 @@ fun MainScreen(
             }
             composable("ai_chat") {
                 AIChatScreen(navController = tabNavController)
+            }
+            composable(
+                route = "pending_services/{eventId}",
+                arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                PendingServicesScreen(
+                    eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L,
+                    navController = tabNavController
+                )
+            }
+            composable(
+                route = "approved_services/{eventId}",
+                arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                ApprovedServicesScreen(
+                    eventId = backStackEntry.arguments?.getLong("eventId") ?: 0L,
+                    navController = tabNavController
+                )
             }
 
         }

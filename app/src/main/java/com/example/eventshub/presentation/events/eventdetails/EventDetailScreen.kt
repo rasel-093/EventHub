@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -49,8 +50,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.eventshub.R
 import com.example.eventshub.components.TopBarWithBackButton
+import com.example.eventshub.data.model.BookingStatus
 import com.example.eventshub.data.model.BookingWithServiceDetails
 import com.example.eventshub.data.model.Event
+import com.example.eventshub.data.model.Service
+import com.example.eventshub.data.model.ServiceEvent
 import com.example.eventshub.presentation.booking.BookingViewModel
 import com.example.eventshub.presentation.events.EventsViewModel
 import com.example.eventshub.presentation.events.components.BudgetSection
@@ -81,10 +85,18 @@ fun EventDetailScreen(
     val scope = rememberCoroutineScope()
     bookingViewModel.loadRegisteredServices(event.id)
 
-    val cartServices = viewModel.services.value
-    //val initialList = (bookingViewModel.registeredServices.value)
-    //val registered by remember { mutableStateOf(initialList) }
-    val registered = bookingViewModel.registeredServices.value
+    //val cartServices = viewModel.services.value
+    var cartServices by remember { mutableStateOf<List<ServiceEvent>>(emptyList()) }
+    cartServices = viewModel.services.value
+
+    var registered by remember { mutableStateOf<List<BookingWithServiceDetails>>(emptyList()) }
+    registered = bookingViewModel.registeredServices.value
+    //val registered = bookingViewModel.registeredServices.value
+
+    var uniqueCartServices by remember { mutableStateOf<List<ServiceEvent>>(emptyList()) }
+    uniqueCartServices = cartServices.filter { cartItem ->
+        registered.none { registeredItem -> registeredItem.id == cartItem.id }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadRegisteredServices(event.id)
@@ -200,6 +212,25 @@ fun EventDetailScreen(
             }
 
             Spacer(Modifier.height(20.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                OutlinedButton(onClick = {navController.navigate("pending_services/${event.id}") },
+                    modifier = Modifier.weight(1f).padding(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = primaryColor),
+                    border = BorderStroke(1.dp, primaryColor)
+                ) { Text("Pending Services") }
+
+                OutlinedButton(onClick = {navController.navigate("approved_services/${event.id}") },
+                    modifier = Modifier.weight(1f).padding(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = primaryColor),
+                    border = BorderStroke(1.dp, primaryColor)
+                ) { Text("Approved Services") }
+            }
+            Spacer(Modifier.height(20.dp))
             Divider()
 
             Text("Cart", style = MaterialTheme.typography.titleMedium)
@@ -208,22 +239,12 @@ fun EventDetailScreen(
             if (cartServices.isEmpty()) {
                 Text("No services added to this event yet.", color = Color.Gray)
             } else {
-                cartServices.forEach {
+                uniqueCartServices.forEach {
                     ServiceCartCard(it, event.id, event.organizerId, onConfirm = {
                         bookingViewModel.loadRegisteredServices(event.id)
+                        Log.d("Registered Service", "Registered Service Reloaded")
+                        navController.navigate("pending_services/${event.id}")
                     })
-                }
-            }
-
-            //Registered Services
-            Spacer(Modifier.height(24.dp))
-            Text("Registered Services", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
-            if (registered.isEmpty()) {
-                Text("No registered services yet.", color = Color.Gray)
-            } else {
-                registered.forEach {
-                    RegisteredServiceCard(it)
                 }
             }
         }
